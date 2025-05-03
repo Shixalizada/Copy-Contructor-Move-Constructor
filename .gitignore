@@ -1,32 +1,90 @@
-# Prerequisites
-*.d
+#include <iostream>
+#include <string>
+using namespace std;
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+class Debtor {
+private:
+    string name;
+    string surname;
+    double debt;
+    bool hasLatePayment;
 
-# Precompiled Headers
-*.gch
-*.pch
+public:
+    Debtor(string n, string s, double d, bool late) {
+        name = n;
+        surname = s;
+        debt = d;
+        hasLatePayment = late;
+    }
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+    void print() {
+        cout << "Name: " << name << " " << surname
+            << " | Debt: " << debt << " AZN"
+            << " | Late Payment: " << (hasLatePayment ? "Yes" : "No") << endl;
+    }
 
-# Fortran module files
-*.mod
-*.smod
+    double getDebt() { return debt; }
+    bool isLate() { return hasLatePayment; }
+};
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+class Bank {
+private:
+    string name;
+    Debtor* debtors[100];
+    int count;
 
-# Executables
-*.exe
-*.out
-*.app
+public:
+    Bank(string n) {
+        name = n;
+        count = 0;
+    }
+
+    void addDebtor(Debtor* d) {
+        if (count < 100) {
+            debtors[count++] = d;
+        }
+    }
+
+    void printAll() {
+        cout << endl << "All debtors in " << name << ":" << endl;
+        for (int i = 0; i < count; i++) {
+            debtors[i]->print();
+        }
+    }
+
+    void printBigDebts(double limit) {
+        cout << endl << "Debtors with debt > " << limit << " AZN:" << endl;
+        for (int i = 0; i < count; i++) {
+            if (debtors[i]->getDebt() > limit)
+                debtors[i]->print();
+        }
+    }
+
+    void printLateDebtors() {
+        cout << endl << "Debtors with late payment:" << endl;
+        for (int i = 0; i < count; i++) {
+            if (debtors[i]->isLate())
+                debtors[i]->print();
+        }
+    }
+};
+
+void main() {
+    Debtor* d1 = new Debtor("Nazim", "Nazimli", 200, 0);
+    Debtor* d2 = new Debtor("Eli", "Veliev", 800, 1);
+    Debtor* d3 = new Debtor("Kitay", "Oktay", 2000, 0);
+
+    Bank bank("Ogurluq Bank");
+
+    bank.addDebtor(d1);
+    bank.addDebtor(d2);
+    bank.addDebtor(d3);
+
+    bank.printAll();
+    bank.printBigDebts(1000);
+    bank.printLateDebtors();
+
+    delete d1;
+    delete d2;
+    delete d3;
+}
